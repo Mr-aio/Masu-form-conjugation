@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ます Form Drill — Classify, Conjugate, Apply</title>
+<meta name="description" content="Japanese verb drill: classify the verb group, type the ます form, read the tense of an example sentence, and type the conjugated form.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #F6F4EE;
+    --card: #FFFFFF;
+    --ink: #22242A;
+    --ink-soft: #6B6E78;
+    --indigo: #2E4A6B;
+    --indigo-deep: #1E3752;
+    --indigo-wash: #E8EDF4;
+    --moss: #3F7048;
+    --moss-wash: #E9F1E9;
+    --vermilion: #B5432E;
+    --vermilion-wash: #F7E9E5;
+    --line: #DDD9CE;
+    --radius: 10px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #14161C;
+      --card: #1D2027;
+      --ink: #E8E6DF;
+      --ink-soft: #9A9DA6;
+      --indigo: #7FA3CC;
+      --indigo-deep: #A8C4E4;
+      --indigo-wash: #232C3A;
+      --moss: #8DBB92;
+      --moss-wash: #21301F;
+      --vermilion: #E08A76;
+      --vermilion-wash: #3A241E;
+      --line: #33363E;
+    }
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Zen Kaku Gothic New', system-ui, sans-serif;
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 24px 16px 48px;
+  }
+  main { width: 100%; max-width: 500px; }
+  header {
+    display: flex; align-items: baseline; justify-content: space-between;
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 10px; margin-bottom: 16px; gap: 12px;
+  }
+  header h1 {
+    font-family: 'Shippori Mincho', serif;
+    font-size: 22px; font-weight: 700; letter-spacing: 0.04em; white-space: nowrap;
+  }
+  header .sub { font-size: 11px; color: var(--ink-soft); letter-spacing: 0.08em; text-transform: uppercase; text-align: right; }
+  .meta {
+    display: flex; justify-content: space-between;
+    font-size: 13px; color: var(--ink-soft);
+    margin-bottom: 12px; font-variant-numeric: tabular-nums;
+  }
+
+  .rail { display: flex; gap: 6px; margin-bottom: 28px; }
+  .rail div { flex: 1; height: 3px; background: var(--line); border-radius: 2px; position: relative; transition: background 0.25s; }
+  .rail div.on { background: var(--indigo); }
+  .rail div.done { background: var(--moss); }
+  .rail span {
+    position: absolute; top: 8px; left: 0;
+    font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--ink-soft); white-space: nowrap;
+  }
+
+  .stage {
+    border-left: 3px solid var(--indigo);
+    padding: 2px 20px 2px 16px;
+    position: relative; margin-bottom: 18px;
+  }
+  .stage::before {
+    content: attr(data-mark);
+    position: absolute; top: 0; right: 0;
+    writing-mode: vertical-rl;
+    font-family: 'Shippori Mincho', serif;
+    font-size: 12px; letter-spacing: 0.4em;
+    color: var(--ink-soft); opacity: 0.5;
+  }
+  .eng {
+    font-family: 'Shippori Mincho', serif;
+    font-size: 27px; font-weight: 700; line-height: 1.35;
+    padding-right: 28px; margin-bottom: 5px; color: var(--indigo-deep);
+  }
+  .engnote { font-size: 14px; color: var(--ink-soft); font-weight: 500; }
+
+  /* japanese sentence frame */
+  .frame {
+    display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 5px;
+    font-family: 'Shippori Mincho', serif;
+    font-size: 21px;
+    padding: 12px 0 2px;
+  }
+  .frame .en { color: var(--ink); }
+  .frame .pt { color: var(--indigo); font-weight: 700; }
+  .frame .bl { color: var(--vermilion); border-bottom: 2px solid var(--vermilion); min-width: 70px; display: inline-block; }
+  .frame .fill { color: var(--moss); border-bottom: 2px solid var(--moss); }
+
+  .vhint {
+    font-size: 13px; color: var(--ink-soft);
+    padding: 6px 0 2px; margin-bottom: 14px;
+    border-top: 1px solid var(--line);
+  }
+  .vhint b { font-family: 'Shippori Mincho', serif; font-size: 18px; color: var(--indigo-deep); }
+
+  .options { display: grid; gap: 10px; }
+  .options button {
+    font: inherit; font-size: 15px; text-align: left;
+    padding: 13px 16px;
+    background: var(--card); color: var(--ink);
+    border: 2px solid var(--indigo); border-radius: var(--radius);
+    cursor: pointer; line-height: 1.45;
+    transition: border-color 0.15s, background 0.15s, transform 0.06s;
+  }
+  .options button b {
+    font-family: 'Shippori Mincho', serif;
+    display: block; font-size: 19px; margin-bottom: 2px; color: var(--indigo-deep);
+  }
+  .options button small { display: block; color: var(--ink-soft); font-size: 13px; }
+  .options button:hover:not(:disabled) { border-color: var(--indigo); background: var(--indigo-wash); }
+  .options button:active:not(:disabled) { transform: scale(0.99); }
+  .options button:focus-visible { outline: 2px solid var(--indigo); outline-offset: 2px; }
+  .options button:disabled { cursor: default; opacity: 0.7; }
+  .options button.correct { background: var(--moss-wash) !important; border-color: var(--moss) !important; opacity: 1; }
+  .options button.correct b, .options button.correct small { color: var(--moss); }
+  .options button.wrong { background: var(--vermilion-wash) !important; border-color: var(--vermilion) !important; opacity: 1; }
+  .options button.wrong b, .options button.wrong small { color: var(--vermilion); }
+
+  /* typed answer */
+  .typerow { display: flex; gap: 8px; }
+  .typerow input {
+    flex: 1; min-width: 0;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 17px; padding: 12px 14px;
+    background: var(--card); color: var(--ink);
+    border: 2px solid var(--indigo); border-radius: var(--radius);
+  }
+  .typerow input:focus { outline: 2px solid var(--indigo); outline-offset: 1px; }
+  .typerow input:disabled { opacity: 0.75; }
+  .typerow input.correct { border-color: var(--moss); background: var(--moss-wash); color: var(--moss); }
+  .typerow input.wrong { border-color: var(--vermilion); background: var(--vermilion-wash); color: var(--vermilion); }
+  .typerow button {
+    font: inherit; font-size: 15px; font-weight: 500;
+    padding: 12px 20px;
+    background: var(--indigo); color: var(--paper);
+    border: none; border-radius: var(--radius); cursor: pointer;
+    transition: filter 0.15s;
+  }
+  @media (prefers-color-scheme: dark) { .typerow button { color: #14161C; } }
+  .typerow button:hover:not(:disabled) { filter: brightness(1.08); }
+  .typerow button:disabled { opacity: 0.4; cursor: default; }
+  .typenote { font-size: 12.5px; color: var(--ink-soft); margin-top: 7px; }
+
+  .feedback { min-height: 52px; font-size: 14px; padding: 8px 2px; margin-top: 8px; }
+  .feedback .verdict { font-weight: 700; }
+  .feedback .verdict.good { color: var(--moss); }
+  .feedback .verdict.bad { color: var(--vermilion); }
+  .feedback .hint { color: var(--ink-soft); }
+  .feedback .ja { font-family: 'Shippori Mincho', serif; font-size: 17px; color: var(--indigo-deep); }
+
+  .primary {
+    font: inherit; font-size: 15px; font-weight: 500;
+    width: 100%; padding: 12px;
+    background: var(--indigo); color: var(--paper);
+    border: none; border-radius: var(--radius); cursor: pointer;
+    transition: filter 0.15s, transform 0.06s;
+  }
+  @media (prefers-color-scheme: dark) { .primary { color: #14161C; } }
+  .primary:hover:not(:disabled) { filter: brightness(1.08); }
+  .primary:active:not(:disabled) { transform: scale(0.99); }
+  .primary:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+  .hidden { display: none !important; }
+
+  .results { text-align: center; padding: 8px 0 4px; }
+  .results .big {
+    font-family: 'Shippori Mincho', serif;
+    font-size: 40px; font-weight: 700; color: var(--indigo-deep);
+    font-variant-numeric: tabular-nums;
+  }
+  .results .msg { font-size: 14px; color: var(--ink-soft); margin: 6px 0 4px; }
+  .results .best { font-size: 12px; color: var(--ink-soft); margin-bottom: 16px; }
+  .misslist { text-align: left; margin: 0 0 16px; padding: 0; list-style: none; border-top: 1px solid var(--line); }
+  .misslist li { padding: 10px 2px; border-bottom: 1px solid var(--line); font-size: 14px; }
+  .misslist .ja { font-family: 'Shippori Mincho', serif; font-size: 17px; color: var(--vermilion); }
+  .misslist .en { color: var(--ink-soft); font-size: 13px; }
+  footer { margin-top: auto; padding-top: 32px; font-size: 12px; color: var(--ink-soft); text-align: center; }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>ます形</h1>
+    <span class="sub">Groups<br>&amp; Conjugation</span>
+  </header>
+
+  <div class="meta">
+    <span id="progress">Verb 1 of 22</span>
+    <span><span id="streak">0</span> streak · <span id="score">0</span> pts</span>
+  </div>
+
+  <div class="rail">
+    <div id="rail1"><span>1 · Group</span></div>
+    <div id="rail2"><span>2 · ます</span></div>
+    <div id="rail3"><span>3 · Tense</span></div>
+    <div id="rail4"><span>4 · Form</span></div>
+  </div>
+
+  <div class="stage" id="stage" data-mark="動詞">
+    <div class="eng" id="headline"></div>
+    <div class="engnote" id="prompt"></div>
+  </div>
+
+  <div class="frame hidden" id="frame"></div>
+  <div class="vhint hidden" id="vhint"></div>
+
+  <div class="options" id="options"></div>
+
+  <div class="typerow hidden" id="typerow">
+    <input id="typein" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
+    <button id="checkBtn">Check</button>
+  </div>
+  <div class="typenote hidden" id="typenote"></div>
+
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+  <button class="primary hidden" id="nextBtn">Next</button>
+
+  <div class="results hidden" id="results">
+    <div class="big" id="finalScore"></div>
+    <div class="msg" id="finalMsg"></div>
+    <div class="best" id="bestScore"></div>
+    <ul class="misslist" id="missList"></ul>
+    <button class="primary" id="againBtn">Play again</button>
+  </div>
+
+  <footer>Name the group, build the ます form, read the tense, then type the conjugation.</footer>
+</main>
+
+<script>
+/* ==================================================================
+   VERBS
+   masu / masuR are the polite non-past; every other form is derived.
+   subj + vf[i] + rest builds the English sentence for combo i.
+   frame: English content words joined by Japanese particles, "_" = verb.
+================================================================== */
+const VERBS = [
+  { kan:"行く", fur:"いく", mean:"to go", group:"godan", masu:"いきます", masuR:"ikimasu",
+    frame:["I","は","School","に","_"], subj:"I", rest:"to school",
+    vf:["go","don't go","went","didn't go"] },
+
+  { kan:"来る", fur:"くる", mean:"to come", group:"irregular", masu:"きます", masuR:"kimasu",
+    note:"来る is irregular: the stem changes sound entirely — く becomes き.",
+    frame:["Friend","が","House","に","_"], subj:"My friend", rest:"to my house",
+    vf:["comes","doesn't come","came","didn't come"] },
+
+  { kan:"帰る", fur:"かえる", mean:"to return home", group:"godan", masu:"かえります", masuR:"kaerimasu",
+    note:"かえる is the exception everyone trips on. It ends in ~eru, which normally means Ichidan, but it conjugates as Godan: かえります, never かえます.",
+    frame:["I","は","6:00","に","_"], subj:"I", rest:"at 6:00",
+    vf:["return home","don't return home","returned home","didn't return home"] },
+
+  { kan:"食べる", fur:"たべる", mean:"to eat", group:"ichidan", masu:"たべます", masuR:"tabemasu",
+    frame:["I","は","Breakfast","を","_"], subj:"I", rest:"breakfast",
+    vf:["eat","don't eat","ate","didn't eat"] },
+
+  { kan:"飲む", fur:"のむ", mean:"to drink", group:"godan", masu:"のみます", masuR:"nomimasu",
+    frame:["Teacher","は","Coffee","を","_"], subj:"The teacher", rest:"coffee",
+    vf:["drinks","doesn't drink","drank","didn't drink"] },
+
+  { kan:"見る", fur:"みる", mean:"to see, to watch", group:"ichidan", masu:"みます", masuR:"mimasu",
+    frame:["We","は","Movie","を","_"], subj:"We", rest:"a movie",
+    vf:["watch","don't watch","watched","didn't watch"] },
+
+  { kan:"聞く", fur:"きく", mean:"to listen, to ask", group:"godan", masu:"ききます", masuR:"kikimasu",
+    frame:["I","は","Music","を","_"], subj:"I", rest:"to music",
+    vf:["listen","don't listen","listened","didn't listen"] },
+
+  { kan:"話す", fur:"はなす", mean:"to speak", group:"godan", masu:"はなします", masuR:"hanashimasu",
+    frame:["Friend","は","Japanese","を","_"], subj:"My friend", rest:"Japanese",
+    vf:["speaks","doesn't speak","spoke","didn't speak"] },
+
+  { kan:"言う", fur:"いう", mean:"to say", group:"godan", masu:"いいます", masuR:"iimasu",
+    frame:["Teacher","は","Something","を","_"], subj:"The teacher", rest:"something",
+    vf:["says","doesn't say","said","didn't say"] },
+
+  { kan:"読む", fur:"よむ", mean:"to read", group:"godan", masu:"よみます", masuR:"yomimasu",
+    frame:["Friend","は","Book","を","_"], subj:"My friend", rest:"a book",
+    vf:["reads","doesn't read","read","didn't read"] },
+
+  { kan:"書く", fur:"かく", mean:"to write", group:"godan", masu:"かきます", masuR:"kakimasu",
+    frame:["I","は","Letter","を","_"], subj:"I", rest:"a letter",
+    vf:["write","don't write","wrote","didn't write"] },
+
+  { kan:"する", fur:"する", mean:"to do", group:"irregular", masu:"します", masuR:"shimasu",
+    note:"する is irregular: す becomes し.",
+    frame:["I","は","Homework","を","_"], subj:"I", rest:"my homework",
+    vf:["do","don't do","did","didn't do"] },
+
+  { kan:"なる", fur:"なる", mean:"to become", group:"godan", masu:"なります", masuR:"narimasu",
+    frame:["Friend","は","Teacher","に","_"], subj:"My friend", rest:"a teacher",
+    vf:["will become","won't become","became","didn't become"] },
+
+  { kan:"ある", fur:"ある", mean:"to exist (things)", group:"godan", masu:"あります", masuR:"arimasu",
+    frame:["Room","に","Chair","が","_"], subj:"There", rest:"a chair in the room",
+    vf:["is","isn't","was","wasn't"] },
+
+  { kan:"いる", fur:"いる", mean:"to exist (people, animals)", group:"ichidan", masu:"います", masuR:"imasu",
+    frame:["Park","に","Dog","が","_"], subj:"There", rest:"a dog in the park",
+    vf:["is","isn't","was","wasn't"] },
+
+  { kan:"買う", fur:"かう", mean:"to buy", group:"godan", masu:"かいます", masuR:"kaimasu",
+    frame:["I","は","Store","で","Bread","を","_"], subj:"I", rest:"bread at the store",
+    vf:["buy","don't buy","bought","didn't buy"] },
+
+  { kan:"売る", fur:"うる", mean:"to sell", group:"godan", masu:"うります", masuR:"urimasu",
+    frame:["Store","は","Book","を","_"], subj:"That store", rest:"books",
+    vf:["sells","doesn't sell","sold","didn't sell"] },
+
+  { kan:"待つ", fur:"まつ", mean:"to wait", group:"godan", masu:"まちます", masuR:"machimasu",
+    note:"つ becomes ち, not つい — まちます.",
+    frame:["I","は","Station","で","_"], subj:"I", rest:"at the station",
+    vf:["wait","don't wait","waited","didn't wait"] },
+
+  { kan:"会う", fur:"あう", mean:"to meet", group:"godan", masu:"あいます", masuR:"aimasu",
+    frame:["I","は","Friend","に","_"], subj:"I", rest:"my friend",
+    vf:["meet","don't meet","met","didn't meet"] },
+
+  { kan:"分かる", fur:"わかる", mean:"to understand", group:"godan", masu:"わかります", masuR:"wakarimasu",
+    frame:["I","は","Japanese","が","_"], subj:"I", rest:"Japanese",
+    vf:["understand","don't understand","understood","didn't understand"] },
+
+  { kan:"知る", fur:"しる", mean:"to know", group:"godan", masu:"しります", masuR:"shirimasu",
+    note:"Like かえる, しる breaks the rule. It ends in ~iru but is Godan: しります, not します.",
+    frame:["I","は","Answer","を","_"], subj:"I", rest:"the answer",
+    vf:["know","don't know","knew","didn't know"] },
+
+  { kan:"思う", fur:"おもう", mean:"to think", group:"godan", masu:"おもいます", masuR:"omoimasu",
+    frame:["I","は","So","と","_"], subj:"I", rest:"so",
+    vf:["think","don't think","thought","didn't think"] }
+];
+
+/* ==================================================================
+   FORMS
+================================================================== */
+const COMBOS = [
+  { key:"pp", label:"Positive · present or future", desc:"I do it / I will do it", ja:"ます",       ro:"masu" },
+  { key:"np", label:"Negative · present or future", desc:"I don't / I won't",     ja:"ません",      ro:"masen" },
+  { key:"pa", label:"Positive · past",              desc:"I did it",              ja:"ました",      ro:"mashita" },
+  { key:"na", label:"Negative · past",              desc:"I didn't",              ja:"ませんでした", ro:"masendeshita" }
+];
+
+const GROUPS = {
+  ichidan:  { label:"Ichidan 一段",  desc:"One stem — drop る, add ます",
+              rule:"Drop る, add ます." },
+  godan:    { label:"Godan 五段",    desc:"Five stems — the vowel shifts to い before ます",
+              rule:"Shift the last sound to the い row, then add ます." },
+  irregular:{ label:"Irregular 不規則", desc:"する and 来る only",
+              rule:"No rule here — this one is memorised." }
+};
+
+function jaForm(v, i){ return v.masu.slice(0, -2) + COMBOS[i].ja; }
+function roForm(v, i){ return v.masuR.slice(0, -4) + COMBOS[i].ro; }
+
+/* romaji normaliser — accepts Hepburn, kunrei, spaces, hyphens, macrons */
+function norm(s){
+  s = (s || '').trim().toLowerCase();
+  s = s.replace(/[\s\-'’_.ー]/g, '');
+  s = s.replace(/ō|ô/g,'o').replace(/ū|û/g,'u').replace(/ā|â/g,'a').replace(/ī|î/g,'i').replace(/ē|ê/g,'e');
+  s = s.replace(/sha/g,'sya').replace(/shu/g,'syu').replace(/sho/g,'syo').replace(/shi/g,'si')
+       .replace(/cha/g,'tya').replace(/chu/g,'tyu').replace(/cho/g,'tyo').replace(/chi/g,'ti')
+       .replace(/ja/g,'zya').replace(/ju/g,'zyu').replace(/jo/g,'zyo').replace(/ji/g,'zi')
+       .replace(/tsu/g,'tu').replace(/fu/g,'hu');
+  return s;
+}
+function matches(input, romaji, kana){
+  const raw = (input || '').trim();
+  if (raw === kana) return true;
+  return norm(raw) === norm(romaji) && norm(raw) !== '';
+}
+
+/* ==================================================================
+   STATE
+================================================================== */
+const $ = id => document.getElementById(id);
+const shuffle = a => { for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+
+let order = [], idx = 0, score = 0, streak = 0, missed = [], combo = 0;
+
+function start(){
+  order = shuffle([...VERBS]);
+  idx = 0; score = 0; streak = 0; missed = [];
+  $('results').classList.add('hidden');
+  $('stage').classList.remove('hidden');
+  $('feedback').classList.remove('hidden');
+  renderPhase1();
+}
+
+function resetUI(mark, headline, promptText){
+  const v = order[idx];
+  $('progress').textContent = `Verb ${idx+1} of ${order.length}`;
+  $('streak').textContent = streak;
+  $('score').textContent = score;
+  $('stage').dataset.mark = mark;
+  $('headline').textContent = headline;
+  $('prompt').textContent = promptText;
+  $('feedback').innerHTML = '';
+  $('nextBtn').classList.add('hidden');
+  $('options').innerHTML = '';
+  $('options').classList.add('hidden');
+  $('typerow').classList.add('hidden');
+  $('typenote').classList.add('hidden');
+  $('frame').classList.add('hidden');
+  $('vhint').classList.add('hidden');
+  const inp = $('typein');
+  inp.value = ''; inp.disabled = false; inp.className = '';
+  $('checkBtn').disabled = false;
+}
+
+function updateRails(a,b,c,d){
+  $('rail1').className = a; $('rail2').className = b;
+  $('rail3').className = c; $('rail4').className = d;
+}
+
+function award(isCorrect){
+  if (isCorrect){
+    streak++;
+    score += 10 + Math.min(Math.max(streak-1,0),5) * 2;
+  } else {
+    streak = 0;
+    if (!missed.includes(order[idx])) missed.push(order[idx]);
+  }
+  $('streak').textContent = streak;
+  $('score').textContent = score;
+}
+
+function settle(isCorrect, msg, nextFn){
+  award(isCorrect);
+  $('feedback').innerHTML = isCorrect
+    ? `<span class="verdict good">Correct!</span> <span class="hint">${msg}</span>`
+    : `<span class="verdict bad">Not quite.</span> <span class="hint">${msg}</span>`;
+  $('nextBtn').classList.remove('hidden');
+  $('nextBtn').textContent = 'Continue →';
+  $('nextBtn').onclick = nextFn;
+  $('nextBtn').focus();
+}
+
+function makeBtn(label, desc, val, onClick){
+  const b = document.createElement('button');
+  b.innerHTML = `<b>${label}</b>` + (desc ? `<small>${desc}</small>` : '');
+  b.dataset.val = val;
+  b.onclick = () => onClick(b);
+  $('options').appendChild(b);
+}
+
+function lockButtons(correctVal, clicked){
+  $('options').querySelectorAll('button').forEach(b => {
+    b.disabled = true;
+    if (b.dataset.val === correctVal) b.classList.add('correct');
+  });
+  if (clicked && clicked.dataset.val !== correctVal) clicked.classList.add('wrong');
+}
+
+/* ---- typed answers ---- */
+function setupTyping(placeholder, note, onSubmit){
+  $('typerow').classList.remove('hidden');
+  $('typenote').classList.remove('hidden');
+  $('typenote').textContent = note;
+  const inp = $('typein');
+  inp.placeholder = placeholder;
+  const go = () => { if(!inp.disabled) onSubmit(inp.value); };
+  $('checkBtn').onclick = go;
+  inp.onkeydown = e => { if (e.key === 'Enter') go(); };
+  inp.focus();
+}
+function lockTyping(isCorrect){
+  const inp = $('typein');
+  inp.disabled = true;
+  inp.className = isCorrect ? 'correct' : 'wrong';
+  $('checkBtn').disabled = true;
+}
+
+/* ---- sentence frame ---- */
+function renderFrame(filled){
+  const v = order[idx];
+  const box = $('frame');
+  box.classList.remove('hidden');
+  box.innerHTML = '';
+  const PARTICLES = ['は','が','を','に','で','へ','と','から','まで','も'];
+  v.frame.forEach(w => {
+    const s = document.createElement('span');
+    if (w === '_'){
+      s.className = filled ? 'fill' : 'bl';
+      s.textContent = filled ? jaForm(v, combo) : '＿＿＿';
+    } else if (PARTICLES.includes(w)){
+      s.className = 'pt'; s.textContent = w;
+    } else {
+      s.className = 'en'; s.textContent = w;
+    }
+    box.appendChild(s);
+  });
+  const dot = document.createElement('span');
+  dot.className = 'en'; dot.textContent = '。';
+  box.appendChild(dot);
+}
+
+function showVerbHint(){
+  const v = order[idx];
+  $('vhint').classList.remove('hidden');
+  $('vhint').innerHTML = `Verb to use, in its ます form: <b>${v.masu}</b> &nbsp;·&nbsp; ${v.mean}`;
+}
+
+function englishSentence(){
+  const v = order[idx];
+  return `${v.subj} ${v.vf[combo]} ${v.rest}.`;
+}
+
+/* ============ PHASE 1 — which group? ============ */
+function renderPhase1(){
+  const v = order[idx];
+  combo = Math.floor(Math.random() * 4);
+  resetUI('分類', `${v.kan}（${v.fur}）`, `${v.mean} — which group is this verb?`);
+  updateRails('on','','','');
+  $('options').classList.remove('hidden');
+
+  shuffle(Object.keys(GROUPS)).forEach(g => {
+    makeBtn(GROUPS[g].label, GROUPS[g].desc, g, (b) => {
+      lockButtons(v.group, b);
+      const base = `${v.fur} is ${GROUPS[v.group].label.split(' ')[0]}.`;
+      settle(g === v.group, v.note ? `${base} ${v.note}` : base, renderPhase2);
+    });
+  });
+}
+
+/* ============ PHASE 2 — type the ます form ============ */
+function renderPhase2(){
+  const v = order[idx];
+  resetUI('ます形', `${v.kan}（${v.fur}）`, 'Type this verb in its ます form.');
+  updateRails('done','on','','');
+
+  const g = GROUPS[v.group];
+  $('vhint').classList.remove('hidden');
+  $('vhint').innerHTML = `<b>${g.label}</b> &nbsp;·&nbsp; ${g.rule} &nbsp;·&nbsp; ${v.mean}`;
+
+  setupTyping('ikimasu', 'Romaji or hiragana — both are accepted.', (val) => {
+    const ok = matches(val, v.masuR, v.masu);
+    lockTyping(ok);
+    settle(ok, `<span class="ja">${v.masu}</span> — ${v.masuR}.`, renderPhase3);
+  });
+}
+
+/* ============ PHASE 3 — read the tense ============ */
+function renderPhase3(){
+  const v = order[idx];
+  resetUI('時制', englishSentence(), 'Which form does this sentence need?');
+  updateRails('done','done','on','');
+  renderFrame(false);
+  showVerbHint();
+  $('options').classList.remove('hidden');
+
+  shuffle([0,1,2,3]).forEach(i => {
+    const c = COMBOS[i];
+    makeBtn(c.label, c.desc, c.key, (b) => {
+      lockButtons(COMBOS[combo].key, b);
+      settle(i === combo,
+        `The ending is 〜${COMBOS[combo].ja}.`,
+        renderPhase4);
+    });
+  });
+}
+
+/* ============ PHASE 4 — type the conjugation ============ */
+function renderPhase4(){
+  const v = order[idx];
+  resetUI('活用', englishSentence(), `Type ${v.masu} as ${COMBOS[combo].label.toLowerCase()}.`);
+  updateRails('done','done','done','on');
+  renderFrame(false);
+  showVerbHint();
+
+  const ja = jaForm(v, combo), ro = roForm(v, combo);
+  setupTyping(ro.slice(0,3) + '…', 'Romaji or hiragana. Spaces are ignored.', (val) => {
+    const ok = matches(val, ro, ja);
+    lockTyping(ok);
+    renderFrame(true);
+    settle(ok, `<span class="ja">${ja}</span> — ${ro}.`, nextVerb);
+  });
+}
+
+function nextVerb(){
+  idx++;
+  if (idx >= order.length) finish();
+  else renderPhase1();
+}
+
+/* ============ RESULTS ============ */
+function finish(){
+  ['stage','options','typerow','typenote','frame','vhint','feedback','nextBtn']
+    .forEach(id => $(id).classList.add('hidden'));
+  $('progress').textContent = 'Finished';
+  updateRails('done','done','done','done');
+
+  $('finalScore').textContent = `${score} pts`;
+  const pct = (order.length - missed.length) / order.length;
+  $('finalMsg').textContent =
+      pct === 1  ? 'Every group, every ending. Nothing left to fix.'
+    : pct >= 0.8 ? 'Strong. Check the exceptions and you are done.'
+    : pct >= 0.5 ? 'Solid start — かえる and しる are worth another look.'
+    :              'Keep going. Group first, then the ending follows.';
+
+  let best = 0;
+  try {
+    best = parseInt(localStorage.getItem('masu-drill-best') || '0', 10);
+    if (score > best){ best = score; localStorage.setItem('masu-drill-best', String(best)); }
+  } catch(e){}
+  $('bestScore').textContent = best ? `Best score: ${best} pts` : '';
+
+  const list = $('missList');
+  list.innerHTML = '';
+  missed.forEach(v => {
+    const li = document.createElement('li');
+    li.innerHTML = `<div class="ja">${v.kan}（${v.fur}） → ${v.masu}</div><div class="en">${v.mean} — ${GROUPS[v.group].label}</div>`;
+    list.appendChild(li);
+  });
+
+  $('results').classList.remove('hidden');
+  $('againBtn').focus();
+}
+
+$('againBtn').onclick = start;
+start();
+</script>
+</body>
+</html>
